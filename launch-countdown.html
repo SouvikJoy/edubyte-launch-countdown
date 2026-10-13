@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Launch Countdown</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --accent: #f97316;
+    --border: #334155;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    background:
+      radial-gradient(1200px 600px at 50% -10%, rgba(249,115,22,.18), transparent 60%),
+      radial-gradient(900px 500px at 85% 110%, rgba(59,130,246,.16), transparent 60%),
+      var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    text-align: center;
+  }
+  .brand {
+    font-size: 13px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 14px;
+  }
+  h1 { font-size: clamp(28px, 6vw, 52px); font-weight: 800; line-height: 1.1; }
+  .subtitle { color: var(--muted); font-size: 16px; margin-top: 10px; max-width: 520px; }
+  .countdown {
+    display: flex; gap: 16px; margin: 40px 0;
+    flex-wrap: wrap; justify-content: center;
+  }
+  .unit {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    min-width: 92px;
+    padding: 22px 14px;
+    box-shadow: 0 14px 40px rgba(0,0,0,.25);
+  }
+  .num {
+    font-size: 52px; font-weight: 800;
+    font-variant-numeric: tabular-nums; line-height: 1;
+    background: linear-gradient(180deg, var(--text), var(--muted));
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .label { margin-top: 10px; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+  .target { color: var(--muted); font-size: 14px; }
+  .target b { color: var(--text); }
+  .live {
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--accent);
+    border-radius: 18px;
+    padding: 28px 36px; margin: 40px 0;
+  }
+  .live h2 { font-size: 32px; font-weight: 800; color: var(--accent); }
+  .live p { color: var(--muted); margin-top: 8px; }
+</style>
+</head>
+<body>
+  <div class="brand">EduByte.tech</div>
+  <h1>Launching Soon</h1>
+  <p class="subtitle">We're putting the finishing touches on a global technology learning platform. See you at launch.</p>
+
+  <div class="countdown" id="countdown" aria-live="polite">
+    <div class="unit"><div class="num" id="d">00</div><div class="label">Days</div></div>
+    <div class="unit"><div class="num" id="h">00</div><div class="label">Hours</div></div>
+    <div class="unit"><div class="num" id="m">00</div><div class="label">Minutes</div></div>
+    <div class="unit"><div class="num" id="s">00</div><div class="label">Seconds</div></div>
+  </div>
+
+  <div class="live" id="live">
+    <h2>We're live 🎉</h2>
+    <p>The wait is over. Welcome to EduByte.</p>
+  </div>
+
+  <p class="target">Launch: <b id="targetText">—</b></p>
+
+<script>
+(function () {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+
+  // Fixed launch date: January 1, 2027 (local time, midnight).
+  const target = new Date(2027, 0, 1, 0, 0, 0);
+
+  function pad(n) { return String(n).padStart(2, "0"); }
+
+  function render() {
+    const diff = target.getTime() - Date.now();
+    const isLive = diff <= 0;
+
+    $("countdown").style.display = isLive ? "none" : "flex";
+    $("live").style.display = isLive ? "block" : "none";
+
+    $("targetText").textContent = target.toLocaleString(undefined, {
+      dateStyle: "full", timeStyle: "short",
+    });
+
+    if (isLive) { document.title = "We're live! · EduByte"; return; }
+
+    const sec = Math.floor(diff / 1000);
+    const days = Math.floor(sec / 86400);
+    const hours = Math.floor((sec % 86400) / 3600);
+    const mins = Math.floor((sec % 3600) / 60);
+    const secs = sec % 60;
+
+    $("d").textContent = pad(days);
+    $("h").textContent = pad(hours);
+    $("m").textContent = pad(mins);
+    $("s").textContent = pad(secs);
+
+    document.title = `${days}d ${pad(hours)}:${pad(mins)}:${pad(secs)} · Launch`;
+  }
+
+  render();
+  setInterval(render, 1000);
+})();
+</script>
+</body>
+</html>
